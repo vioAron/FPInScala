@@ -46,6 +46,13 @@ class TweetSetSuite extends FunSuite {
 
   test("union: set4c and set4d") {
     new TestSets {
+      assert(size(set4c) === 3)
+      assert(size(set4c.union(new NonEmpty(new Tweet("z", "z body", 20), new Empty, new NonEmpty(new Tweet("z", "z body", 20), new Empty, new Empty)))) === 5)
+    }
+  }
+
+  test("union: all") {
+    new TestSets {
       assert(size(set4c.union(set4d)) === 4)
     }
   }
@@ -68,5 +75,9 @@ class TweetSetSuite extends FunSuite {
       assert(!trends.isEmpty)
       assert(trends.head.user == "a" || trends.head.user == "b")
     }
+  }
+
+  test("filter and trending: tweets with 321 and 205 retweets") {
+    val alll = TweetReader.allTweets
   }
 }

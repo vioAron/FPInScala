@@ -55,8 +55,9 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def union(that: TweetSet): TweetSet
+  def union(that: TweetSet): TweetSet = that.filterAcc(twit => true, this)
 
+  def isEmpty: Boolean
   /**
    * Returns the tweet from this set which has the greatest retweet count.
    *
@@ -117,9 +118,9 @@ class Empty extends TweetSet {
 
   def mostRetweeted: Tweet = new Tweet("", "", 0)
 
-  def descendingByRetweet: TweetList = Nil
+  def isEmpty: Boolean = true
 
-  def union(that: TweetSet): TweetSet = that
+  def descendingByRetweet: TweetList = Nil
 
   def contains(tweet: Tweet): Boolean = false
 
@@ -142,6 +143,8 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     }
   }
 
+  def isEmpty: Boolean = false
+
   def mostRetweeted: Tweet = {
     if (elem.retweets > left.mostRetweeted.retweets && elem.retweets > right.mostRetweeted.retweets)
       elem
@@ -153,10 +156,6 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def descendingByRetweet: TweetList = {
     new Cons(mostRetweeted, remove(mostRetweeted).descendingByRetweet)
-  }
-
-  def union(that: TweetSet): TweetSet = {
-    ((left union right) union that) incl elem
   }
 
   /**
@@ -212,11 +211,13 @@ object GoogleVsApple {
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
   lazy val googleTweets: TweetSet = {
-    TweetReader.allTweets.filter { t =>
-      {
-        google.exists { w => t.text.contains(w) }
-      }
-    }
+    TweetReader.allTweets
+    //.filter { t =>
+    //{
+    //true
+    //google.exists { w => t.text.contains(w) }
+    //}
+    //}
   }
   lazy val appleTweets: TweetSet = {
     TweetReader.allTweets.filter { t =>
@@ -231,11 +232,16 @@ object GoogleVsApple {
    * sorted by the number of retweets.
    */
   lazy val trending: TweetList = {
-    (googleTweets union appleTweets).descendingByRetweet
+    googleTweets.descendingByRetweet
+    //(googleTweets union appleTweets).descendingByRetweet
   }
 }
 
 object Main extends App {
   // Print the trending tweets
-  GoogleVsApple.trending foreach println
+  println("started!")
+  new Cons(new Tweet("a", "a body", 20), Nil) foreach println
+  //GoogleVsApple.trending foreach println
+  val all = TweetReader.allTweets
+  println("finished!")
 }
