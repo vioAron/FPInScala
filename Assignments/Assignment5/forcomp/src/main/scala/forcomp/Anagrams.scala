@@ -69,10 +69,18 @@ object Anagrams {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = ???
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
+    dictionary.groupBy { x => wordOccurrences(x) }
+  }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    val opt = dictionaryByOccurrences.get(wordOccurrences(word))
+    opt match {
+      case Some(words) => words
+      case None => Nil
+    }
+  }
 
   /**
    * Returns the list of all subsets of the occurrence list.
@@ -97,8 +105,14 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    List(List())
+    //for(i <- 0 until occurrences.length) yield occurrences.combinations(i).toList
+  }
 
+  def getAll(x: Char, y:Int): Occurrences = {
+     (for(i <- 1 to y) yield (x, i)).toList
+  }
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.
    *
